@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollabX MA - Connect. Inspire. Perform.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #111827 0%, #4B5563 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-pattern {
+            background-color: #ffffff;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        html {
+            scroll-padding-top: 80px; 
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        /* Hide scrollbar for clean look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Brand Marquee Animation */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+        .marquee-content {
+            display: inline-flex;
+            animation: marquee 40s linear infinite;
+        }
+        .marquee-content:hover {
+            animation-play-state: paused;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        /* Chat Widget Animations */
+        .chat-enter {
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 0.3s ease-out forwards;
+        }
+        @keyframes slideUp {
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        /* Modal Animation */
+        .modal-fade {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-900 antialiased overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="showPage('home')">
+                    <img src="Logo_collabx.png" alt="CollabX Logo" class="h-8 w-auto object-contain">
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <button onclick="showPage('home')" class="text-sm font-semibold text-slate-600 hover:text-black transition-colors">Home</button>
+                    <button onclick="showPage('catalog')" class="text-sm font-semibold text-slate-600 hover:text-black transition-colors">Creators Catalog</button>
+                    <button onclick="toggleStrategyModal()" class="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 hover:scale-105 transition-transform flex items-center gap-1">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-purple-600"></i> AI Strategy
+                    </button>
+                    <a href="#contact" onclick="showPage('home')" class="bg-black text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-slate-800 transition-all shadow-lg hover:shadow-slate-800/25">Join Now</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-black p-2">
+                        <i data-lucide="menu" class="w-7 h-7"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 z-40 bg-white transform translate-x-full transition-transform duration-300 md:hidden pt-24 px-6 flex flex-col space-y-8 h-screen">
+            <button id="close-menu-btn" class="absolute top-6 right-6 p-2 bg-slate-100 rounded-full text-slate-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="flex flex-col space-y-6 text-center">
+                <button class="text-3xl font-bold text-slate-800" onclick="showPage('home'); toggleMenu()">Home</button>
+                <button class="text-3xl font-bold text-slate-800" onclick="showPage('catalog'); toggleMenu()">Influencers Catalog</button>
+                <button class="text-3xl font-bold text-purple-600 flex items-center justify-center gap-2" onclick="toggleStrategyModal(); toggleMenu()">
+                    <i data-lucide="sparkles" class="w-6 h-6"></i> AI Strategy
+                </button>
+                <a href="#contact" class="text-2xl font-bold text-black mt-4" onclick="showPage('home'); toggleMenu()">Contact Us</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= HOME PAGE VIEW ================= -->
+    <div id="home-view">
+        <!-- Hero Section -->
+        <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 hero-pattern overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center max-w-4xl mx-auto">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-sm font-bold mb-8 animate-fade-in-up shadow-sm">
+                        <span class="relative flex h-2.5 w-2.5">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-black"></span>
+                        </span>
+                        #1 Moroccan Influencer Catalog
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-slate-900 leading-tight">
+                        Connect. Inspire. <br>
+                        <span class="gradient-text">Perform.</span>
+                    </h1>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-600 mb-10 leading-relaxed">
+                        We connect brands with Morocco's most influential voices. Real data, dynamic pricing, and guaranteed performance. 
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <button onclick="showPage('catalog')" class="px-8 py-4 bg-black text-white rounded-xl font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/20 flex items-center justify-center gap-2 group">
+                            Browse All Creators
+                            <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                        <button onclick="toggleStrategyModal()" class="px-8 py-4 bg-white text-purple-700 border border-purple-200 rounded-xl font-bold hover:bg-purple-50 transition-all flex items-center justify-center shadow-sm hover:shadow-md gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i> AI Campaign Builder
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Brands Section -->
+        <section id="brands" class="py-16 bg-slate-50 border-y border-slate-100 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 text-center">
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-3">Trusted By Leading Brands</h2>
+            </div>
+            
+            <div class="marquee-container">
+                <div class="marquee-content" id="brand-marquee">
+                    <!-- Brands will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Preview Creators Section -->
+        <section class="py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-3">Sneak Peek</h2>
+                    <h3 class="text-3xl md:text-5xl font-bold text-slate-900 mb-6">Top Talents</h3>
+                </div>
+                <!-- Mini Grid - Top 4 Sorted -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                    <div class="relative rounded-2xl overflow-hidden aspect-[3/4] bg-slate-100 group cursor-pointer" onclick="showPage('catalog')">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
+                        <img src="influncers images/hbirkou Safae HOME.webp" alt="Influencer Hbirkou Safae" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute bottom-4 left-4 right-4 text-white">
+                            <div class="bg-black/60 backdrop-blur-sm rounded-2xl px-4 py-3">
+                            <h4 class="font-bold text-lg">Hbirkou Safae</h4>
+                            <p class="text-slate-200 text-sm">7.4M Followers</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden aspect-[3/4] bg-slate-100 group cursor-pointer" onclick="showPage('catalog')">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
+                        <img src="influncers images/fati jamali HOME.jpg" alt="Influencer Fati Jamali" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute bottom-4 left-4 right-4 text-white">
+                            <div class="bg-black/60 backdrop-blur-sm rounded-2xl px-4 py-3">
+                            <h4 class="font-bold text-lg">Fati Jamali</h4>
+                            <p class="text-slate-200 text-sm">5.6M Followers</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden aspect-[3/4] bg-slate-100 group cursor-pointer" onclick="showPage('catalog')">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
+                        <img src="influncers images/nouhaila barbie HOME.jpg" alt="Influencer Nouhaila Barbie" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute bottom-4 left-4 right-4 text-white">
+                            <div class="bg-black/60 backdrop-blur-sm rounded-2xl px-4 py-3">
+                            <h4 class="font-bold text-lg">Nouhaila Barbie</h4>
+                            <p class="text-slate-200 text-sm">4.1M Followers</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden aspect-[3/4] bg-slate-100 group cursor-pointer" onclick="showPage('catalog')">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
+                        <img src="influncers images/zouhair zair HOME.jpg" alt="Influencer Zouhair Zair" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute bottom-4 left-4 right-4 text-white">
+                            <div class="bg-black/60 backdrop-blur-sm rounded-2xl px-4 py-3">
+                            <h4 class="font-bold text-lg">Zouhair Zair</h4>
+                            <p class="text-slate-200 text-sm">3.3M Followers</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button onclick="showPage('catalog')" class="inline-flex items-center gap-2 text-black font-bold border-b-2 border-black hover:text-slate-600 hover:border-slate-600 transition-all pb-1">
+                        View All 100+ Influencers <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-24 bg-slate-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-2 gap-16">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Get in Touch</h2>
+                        <h3 class="text-4xl font-bold mb-6">Partner With Us</h3>
+                        <p class="text-slate-400 mb-8">
+                            Presented by <strong>Ahmed Tayane</strong>. Reach out for partnership inquiries or to join our roster.
+                        </p>
+                        <div class="space-y-6">
+                            <!-- WhatsApp Link in Contact Section -->
+                            <a href="https://wa.me/212615191083" target="_blank" class="flex items-center gap-4 group hover:bg-white/5 p-2 rounded-lg transition-colors -mx-2">
+                                <div class="p-3 bg-white/10 rounded-lg group-hover:bg-[#25D366] transition-colors">
+                                    <i data-lucide="phone" class="w-6 h-6 text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold group-hover:text-[#25D366] transition-colors">Phone / WhatsApp</h4>
+                                    <p class="text-slate-400">+212 615-191083</p>
+                                </div>
+                            </a>
+                            <div class="flex items-center gap-4">
+                                <div class="p-3 bg-white/10 rounded-lg">
+                                    <i data-lucide="mail" class="w-6 h-6 text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold">Email</h4>
+                                    <p class="text-slate-400">collabxma@icloud.com<br>ahmed@collabxma.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-3xl p-8 text-slate-900">
+                        <form class="space-y-4" onsubmit="event.preventDefault(); alert('Request Sent!');">
+                            <input type="text" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200" placeholder="Your Name">
+                            <input type="email" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200" placeholder="Email">
+                            <button class="w-full py-4 bg-black text-white rounded-xl font-bold hover:bg-slate-800">Send Request</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================= CATALOG PAGE VIEW (HIDDEN INITIALLY) ================= -->
+    <div id="catalog-view" class="hidden min-h-screen bg-slate-50 pt-28 pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <button onclick="showPage('home')" class="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-black">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Home
+                </button>
+                <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Influencer Catalog</h1>
+                <p class="text-slate-600 max-w-2xl mx-auto">Sorted by Reach (Highest to Lowest)</p>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-10 sticky top-24 z-30 max-w-2xl mx-auto">
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-4 top-3.5 text-slate-400 w-5 h-5"></i>
+                    <input type="text" id="searchInput" onkeyup="filterInfluencers()" placeholder="Search influencer by name or handle..." class="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-black transition-all">
+                </div>
+            </div>
+
+            <!-- Grid Container -->
+            <div id="influencer-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Cards will be injected here via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= AI CAMPAIGN GENERATOR MODAL (NEW FEATURE) ================= -->
+    <div id="ai-strategy-modal" class="fixed inset-0 z-[100] bg-black/50 hidden backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl modal-fade">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white">
+                <div class="flex items-center gap-3">
+                    <div class="bg-purple-100 p-2 rounded-lg">
+                        <i data-lucide="sparkles" class="w-6 h-6 text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900">AI Campaign Architect ✨</h3>
+                        <p class="text-xs text-slate-500">Powered by Gemini 2.5</p>
+                    </div>
+                </div>
+                <button onclick="toggleStrategyModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-6">
+                <!-- Input Section -->
+                <div id="strategy-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Brand/Product Name</label>
+                        <input type="text" id="brand-name" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="e.g., GlowUp Skincare">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Target Audience</label>
+                            <input type="text" id="target-audience" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="e.g., Women 18-30 in Morocco">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Campaign Goal</label>
+                            <select id="campaign-goal" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-purple-500 outline-none">
+                                <option>Brand Awareness</option>
+                                <option>Sales / Conversion</option>
+                                <option>User Generated Content (UGC)</option>
+                                <option>Event Promotion</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="generateCampaignStrategy()" class="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-bold hover:opacity-90 transition-all shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2">
+                        <i data-lucide="wand-2" class="w-5 h-5"></i> Generate Strategy
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div id="strategy-loading" class="hidden text-center py-8">
+                    <div class="flex justify-center mb-4">
+                        <i data-lucide="loader-2" class="w-10 h-10 text-purple-600 animate-spin"></i>
+                    </div>
+                    <p class="text-slate-600 font-medium animate-pulse">Analysing market trends & creator data...</p>
+                </div>
+
+                <!-- Results Section -->
+                <div id="strategy-result" class="hidden space-y-6">
+                    <div class="bg-purple-50 p-6 rounded-xl border border-purple-100">
+                        <h4 class="font-bold text-purple-900 mb-4 flex items-center gap-2">
+                            <i data-lucide="lightbulb" class="w-5 h-5"></i> Recommended Strategy
+                        </h4>
+                        <div id="strategy-content" class="prose prose-sm text-slate-700 max-w-none"></div>
+                    </div>
+                    <button onclick="resetStrategyForm()" class="text-sm text-slate-500 hover:text-purple-600 font-medium flex items-center gap-1 mx-auto">
+                        <i data-lucide="refresh-ccw" class="w-4 h-4"></i> Create Another Campaign
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-100 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                 <div class="bg-black p-2 rounded-lg">
+                    <img src="logo%20collabx.png" alt="CollabX Logo" class="h-8 w-auto object-contain">
+                </div>
+            </div>
+            <div class="text-sm text-slate-400">
+                &copy; 2025 CollabX MA. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= FLOATING ACTION BUTTONS ================= -->
+    <button onclick="toggleAIChat()" class="fixed bottom-[168px] right-6 z-50 bg-black text-white p-3.5 rounded-full shadow-lg hover:scale-110 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group" aria-label="AI Support">
+        <i data-lucide="bot" class="w-8 h-8"></i>
+        <span class="absolute right-full mr-4 bg-white text-slate-800 px-3 py-1.5 rounded-lg text-sm font-bold shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+            Ask AI
+        </span>
+    </button>
+
+    <a href="https://instagram.com/collabx.ma" target="_blank" class="fixed bottom-24 right-6 z-50 bg-gradient-to-tr from-[#FFD600] via-[#FF0100] to-[#D800B9] text-white p-3.5 rounded-full shadow-lg shadow-pink-500/30 hover:scale-110 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group" aria-label="Follow on Instagram">
+        <i data-lucide="instagram" class="w-8 h-8"></i>
+        <span class="absolute right-full mr-4 bg-white text-slate-800 px-3 py-1.5 rounded-lg text-sm font-bold shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+            Follow us
+        </span>
+    </a>
+
+    <a href="https://wa.me/212615191083" target="_blank" class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-3.5 rounded-full shadow-lg shadow-green-500/30 hover:scale-110 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group" aria-label="Chat on WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" class="w-8 h-8">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+        </svg>
+        <span class="absolute right-full mr-4 bg-white text-slate-800 px-3 py-1.5 rounded-lg text-sm font-bold shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+            Chat with us
+        </span>
+    </a>
+
+    <!-- AI Chat Widget -->
+    <div id="ai-chat-widget" class="fixed bottom-24 right-20 w-80 md:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 hidden flex flex-col overflow-hidden chat-enter transform origin-bottom-right" style="height: 500px; max-height: 80vh;">
+        <!-- Header -->
+        <div class="bg-black text-white p-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i data-lucide="bot" class="w-5 h-5"></i>
+                <span class="font-bold">CollabX AI Support</span>
+            </div>
+            <button onclick="toggleAIChat()" class="text-slate-300 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <!-- Chat Area -->
+        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50">
+            <div class="flex items-start gap-2">
+                <div class="bg-black text-white p-2 rounded-full">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </div>
+                <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-700 shadow-sm max-w-[85%]">
+                    Hello! I'm your professional AI assistant for CollabX MA. I can help you find the right <strong>influencer</strong>, explain our <strong>dynamic pricing</strong>, or guide you to our contact channels. How can I assist you today?
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-3 border-t border-slate-200 bg-white">
+            <form onsubmit="handleAIChat(event)" class="flex gap-2">
+                <input type="text" id="ai-input" class="flex-1 px-4 py-2 bg-slate-100 border-none rounded-full text-sm focus:ring-2 focus:ring-black outline-none" placeholder="Ask about influencers, pricing..." autocomplete="off">
+                <button type="submit" class="p-2 bg-black text-white rounded-full hover:bg-slate-800 transition-colors">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const btn = document.getElementById('mobile-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        function toggleMenu() {
+            const isClosed = menu.classList.contains('translate-x-full');
+            if (isClosed) {
+                menu.classList.remove('translate-x-full');
+            } else {
+                menu.classList.add('translate-x-full');
+            }
+        }
+        btn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+
+        // --- Router Logic ---
+        function showPage(pageId) {
+            const homeView = document.getElementById('home-view');
+            const catalogView = document.getElementById('catalog-view');
+            
+            if (pageId === 'catalog') {
+                homeView.classList.add('hidden');
+                catalogView.classList.remove('hidden');
+                window.scrollTo(0, 0);
+                renderCatalog(); 
+            } else {
+                catalogView.classList.add('hidden');
+                homeView.classList.remove('hidden');
+            }
+        }
+
+        // --- BRAND DATA ---
+        const brands = [
+            { name: "Valary Skin", handle: "valaryskin.ma", image: "influncers images/valary.jpg" },
+            { name: "LC Waikiki", handle: "lcwaikiki.morocco", image: "influncers images/lc_waikiki.png" },
+            { name: "King Tacos", handle: "kingtacos_maarif", image: "influncers images/king tacos.jpg" },
+            { name: "Bo Sushi", handle: "bosushi_casablanca", image: "influncers images/bo sushi.jpg" },
+            { name: "Huawei", handle: "huaweimobilemaroc", image: "influncers images/huawei.png" },
+            { name: "Mira Clinic", handle: "miraclinic.tr", image: "influncers images/mira clenic.jpg" },
+            { name: "Health Power", handle: "healthpower_officiel", image: "influncers images/health power.jpg" },
+            { name: "Muzz", handle: "muzz_maghreb", image: "influncers images/muzz.jpg" },
+            { name: "Xiaomi", handle: "xiaomi.morocco", image: "influncers images/redmi.jpg" },
+            { name: "Honor", handle: "honormorocco", image: "influncers images/honor.jpg" },
+            { name: "Franui", handle: "franui.ma", image: "influncers images/franui.png" },
+            { name: "Derma Doc", handle: "dermadocmaroc", image: "influncers images/derma doc.png" },
+            { name: "Hadri Parfums", handle: "hadriparfums", image: "influncers images/hadri.jpg" },
+            { name: "Maroc Skydive", handle: "maroc.skydive", image: "influncers images/maroc skydive.png" },
+            { name: "Numero Arabia", handle: "numeroarabia", image: "influncers images/numero arabia.jpg" }
+        ];
+
+        // Render Brands
+        const brandMarquee = document.getElementById('brand-marquee');
+        // Clone brands to create infinite loop effect
+        const infiniteBrands = [...brands, ...brands];
+        
+        infiniteBrands.forEach(brand => {
+            const div = document.createElement('a');
+            div.href = `https://instagram.com/${brand.handle}`;
+            div.target = "_blank";
+            div.className = "inline-flex flex-col items-center justify-center mx-8 group cursor-pointer";
+            // Using actual brand logos
+            div.innerHTML = `
+                <div class="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 overflow-hidden mb-3 group-hover:border-black transition-all">
+                    <img src="${brand.image}" alt="${brand.name}" class="w-full h-full object-cover">
+                </div>
+                <span class="font-bold text-sm text-slate-600 group-hover:text-black transition-colors">${brand.name}</span>
+            `;
+            brandMarquee.appendChild(div);
+        });
+
+        // --- Influencer Data (Raw List - Will be Sorted) ---
+        let influencers = [
+            { name: "HBIRKOUSAFAE OFFICIEL", handle: "hbirkousafae_officiel", followers: "7.4M", image: "influncers images/hbirkou safae.jpg" },
+            { name: "FATIJAMALIOFFICIEL", handle: "fatijamaliofficiel", followers: "5.6M", image: "influncers images/Fati Jamali.jpg" },
+            { name: "NOUHAILA BARBIE", handle: "nouhailabarbie", followers: "4.1M", image: "influncers images/nouhaila barbie .jpg" },
+            { name: "ZOUHAIRZAIR", handle: "zouhairzair", followers: "3.3M", image: "influncers images/zouhair zair.jpeg" },
+            { name: "ASMAE AMRANI", handle: "asmaeamraniofficiel", followers: "3.3M", image: "influncers images/asmae amrani.jpg" },
+            { name: "FATIMAZAHRAQANBOUA_", handle: "fatimazahraqanboua_", followers: "3.2M", image: "influncers images/FatimaZahra Qanboua.jpg" },
+            { name: "ABOUBAKR ZIANI", handle: "aboubakrziani", followers: "3M", image: "influncers images/aboubakr ziani.jpg" },
+            { name: "NOUREDDINE ABAS DAKI", handle: "noureddine_abas_daki", followers: "2.6M", image: "influncers images/noureddine abas daki.webp" },
+            { name: "SAHARSEDDIKI", handle: "saharseddiki", followers: "2.5M", image: "influncers images/sahar seddiki.png" },
+            { name: "AMINEES SALHI", handle: "amineessalhi", followers: "2.3M", image: "influncers images/aminees salhi.jpg" },
+            { name: "FATIMA ZAHRA_EL_IBRAHIMI", handle: "fatimazahra_el_ibrahimi", followers: "2.3M", image: "influncers images/fatima zahra el ibrahimi.jpg" },
+            { name: "ABDELILLAH HABBAT IDRISSI", handle: "abdelillah_habbat_idrissi", followers: "2.2M", image: "influncers images/abdel illah habbat idrissi.jpg" },
+            { name: "CHEKORS", handle: "chekors", followers: "2.1M", image: "influncers images/chekors.jpg" },
+            { name: "ANASELHAMDOUCHII", handle: "anaselhamdouchii", followers: "2M", image: "influncers images/anas elhamdouchi.jpg" },
+            { name: "YOUSRA BARRYCH", handle: "yousrabarrych", followers: "2M", image: "influncers images/Yousra Barrych.png" },
+            { name: "SOSSAM", handle: "sossam", followers: "1.9M", image: "influncers images/sossam.jpg" },
+            { name: "MERIEM.ZOUBIR", handle: "meriem.zoubir", followers: "1.8M", image: "influncers images/meryem zoubir.jpg" },
+            { name: "SANAESLAAAY", handle: "sanaeslaaay", followers: "1.6M", image: "influncers images/sanae slaaay.jpg" },
+            { name: "SEDKIHOUDA_OFFICIEL", handle: "sedkihouda_officiel", followers: "1.4M", image: "influncers images/houda sedki.jpg" },
+            { name: "KHAWLA GHARRAFI CHERKAOUI", handle: "khawlagharraficherkaoui", followers: "1.4M", image: "influncers images/KHAWLA GHARRAFI CHERKAOUI.jpg" },
+            { name: "HAJAR ADNANE OFFICIEL", handle: "hajaradnane_officiel", followers: "1.3M", image: "influncers images/HAJAR ADNANE OFFICIEL.jpg" },
+            { name: "SALWAZARHANE", handle: "salwazarhane", followers: "1.2M", image: "influncers images/SALWAZARHANE.jpeg" },
+            { name: "NADA.HADDAOUI", handle: "nada.haddaoui", followers: "1.1M", image: "influncers images/NADA.HADDAOUI.jpg" },
+            { name: "RITALAGZOULI", handle: "ritalagzouli", followers: "1.1M", image: "influncers images/RITALAGZOULI.jpg" },
+            { name: "DR ISMAEL AZIZ", handle: "drismaelaziz", followers: "1M", image: "influncers images/dr ismael aziz.jpg" },
+            { name: "EL MEHDI BOUGHABA", handle: "elmehdiboughaba", followers: "1M", image: "influncers images/Mehdi boughaba.jpg" },
+            { name: "SOUKAINA GLAMOUR", handle: "soukainaglamour", followers: "1M", image: "influncers images/soukaina glamour.jpeg" },
+            { name: "SELMA FAIDA", handle: "selmafaida", followers: "1M", image: "influncers images/SELMA FAIDA.jpeg" },
+            { name: "KENZA BELLA", handle: "kenzabella", followers: "1M", image: "influncers images/KENZA BELLA.jpg" },
+            { name: "AYOUB STAR", handle: "ayoubstar", followers: "1M", image: "influncers images/AYOUB STAR.jpg" },
+            { name: "HAMZA SENHAJI", handle: "hamzasenhaji", followers: "1M", image: "influncers images/Mawazine SENHAJI.jpg" },
+            { name: "BILAL MOUHOUCH", handle: "bilalmouhouch", followers: "1M", image: "influncers images/Bilal mouhouch.jpeg" },
+            { name: "RABIEKATI", handle: "rabiekati", followers: "1M", image: "influncers images/RABIEKATI.jpg" },
+            { name: "FATIMAEZZAHRA_LAHRECH.OFFICIEL", handle: "fatimaezzahra_lahrech.officiel", followers: "1M", image: "influncers images/FATIMAEZZAHRA_LAHRECH.OFFICIEL.jpg" },
+            
+            { name: "AMIR WALID", handle: "amirwalid", followers: "956K", image: "influncers images/Amir walid.jpeg" },
+            { name: "CHEF WALID", handle: "chefwalid", followers: "942K", image: "influncers images/CHEF WALID.jpg" },
+            { name: "HIBA ESSABBAH", handle: "hibaessabbah", followers: "892K", image: "influncers images/HIBA ESSABBAH.jpg" },
+            { name: "ACHRAF NEDDAY", handle: "achrafnedday", followers: "868K", image: "influncers images/ACHRAF NEDDAY.jpg" },
+            { name: "CHAIMAE BELKHIR", handle: "chaimaebelkhir", followers: "855K", image: "influncers images/CHAIMAE BELKHIR.jpg" },
+            { name: "MERYEM CHADY", handle: "meryemchady", followers: "841K", image: "influncers images/Meryem chadi.jpeg" },
+            { name: "SARA DIN", handle: "saradin", followers: "819K", image: "influncers images/sara din.jpg" },
+            { name: "WALID LWAJDI", handle: "walidlwajdi", followers: "800K", image: "influncers images/walid lwajdi.jpg" },
+            { name: "AMINE ZINEDDINE", handle: "aminezineddine", followers: "754K", image: "influncers images/amine zinnedine.jpg" },
+            { name: "LAWLA_DOROFFF", handle: "lawla_dorofff", followers: "739K", image: "influncers images/lawla dorof.jpg" },
+            { name: "FADIL BASRI", handle: "fadilbasri", followers: "732K", image: "influncers images/FADIL BASRI.jpg" },
+            { name: "9OSSOS", handle: "9ossos", followers: "703K", image: "influncers images/9ossos.jpg" },
+            { name: "EPER_OUSSAMA", handle: "eper_oussama", followers: "654K", image: "influncers images/eper oussama.jpg" },
+            { name: "GOUTTAY KHADIJA", handle: "gouttaykhadija", followers: "625K", image: "influncers images/gouttay khadija.jpg" },
+            { name: "MERYEM BNH", handle: "meryembnh", followers: "575K", image: "influncers images/meryem bnh.jpg" },
+            { name: "MATJAR.LAILA_OFFICIAL", handle: "matjar.laila_official", followers: "561K", image: "influncers images/matjar laila.jpg" },
+            { name: "YAHYA ABADA", handle: "yahyaabada", followers: "553K", image: "influncers images/yahya abada.jpg" },
+            { name: "MALIKA BELAOUAD", handle: "malikabelaouad", followers: "544K", image: "influncers images/malika belouad.jpg" },
+            { name: "OMARBAIROUK", handle: "omarbairouk", followers: "519K", image: "influncers images/omar bairouk.jpg" },
+            { name: "OUMNIA ESSEDDIQUI", handle: "oumniaesseddiqui", followers: "491K", image: "influncers images/oumnia essediqui.jpg" },
+            { name: "AYA FRAYMIJA", handle: "ayafraymija", followers: "450K", image: "influncers images/aya fraymija.jpg" },
+            { name: "AHMED RIFAI", handle: "ahmedrifai", followers: "429K", image: "influncers images/ahmed rifai.jpg" },
+            { name: "OMAR FADILII", handle: "omarfadilii", followers: "426K", image: "influncers images/omar fadili.jpg" },
+            { name: "TAHA RACHIDY", handle: "taharachidy", followers: "402K", image: "influncers images/taha rachidy.jpg" },
+            { name: "SALOUITAAAA", handle: "salouitaaaa", followers: "389K", image: "influncers images/salouita.jpg" },
+            { name: "LKHTIBSIMO", handle: "lkhtibsimo", followers: "347K", image: "influncers images/simo lkhtib.jpg" },
+            { name: "MARWALAHLOU", handle: "marwalahlou", followers: "330K", image: "influncers images/marwalahlou.jpg" },
+            { name: "MOUNIAJAIDER", handle: "mouniajaider", followers: "300K", image: "influncers images/mounia jaider.jpg" },
+            { name: "MOHAMED MALI", handle: "mohamedmali", followers: "293K", image: "influncers images/Mohamed mali.jpeg" },
+            { name: "LILY", handle: "lily", followers: "263K", image: "influncers images/lily.jpg" },
+            { name: "MAMTALO", handle: "mamtalo", followers: "262K", image: "influncers images/mamtalo.jpg" },
+            { name: "BOUCHRA EL HAMMOUTI", handle: "bouchraelhammouti", followers: "259K", image: "influncers images/bouchra el hammouti.jpg" },
+            { name: "AYA IGOUDYANE", handle: "ayaigoudyane", followers: "251K", image: "influncers images/aya igoudyane.jpg" },
+            { name: "MARWA", handle: "marwa", followers: "240K", image: "influncers images/marwa.jpg" },
+            { name: "BOTATOSALAH", handle: "botatosalah", followers: "233K", image: "influncers images/botato salah.jpg" },
+            { name: "ALI GE", handle: "alige", followers: "230K", image: "influncers images/ali ge.jpg" },
+            { name: "MEHDI LAHLOU", handle: "mehdilahlou", followers: "229K", image: "influncers images/mehdi lahlou.jpg" },
+            { name: "EL HABIB AIT EL FAQUIR", handle: "elhabibaitelfaquir", followers: "227K", image: "influncers images/el habib ait.jpg" },
+            { name: "BILAL AGBALO", handle: "bilalagbalo", followers: "215K", image: "influncers images/bilal agbalo.jpg" },
+            { name: "ADAMACHAB", handle: "adamachab", followers: "200K", image: "influncers images/adam achab.jpg" },
+            { name: "ZAKIABEAUTY", handle: "zakiabeauty", followers: "197K", image: "influncers images/zakia beauty.jpg" },
+            { name: "HAJARMASDOUKI.OFFICIEL", handle: "hajarmasdouki.officiel", followers: "197K", image: "influncers images/hajar masdouki.jpg" },
+            { name: "YALA NKHARJO", handle: "yalankharjo", followers: "174K", image: "influncers images/yala nkhrjo.jpg" },
+            { name: "YASSINE ELKHALFI", handle: "yassineelkhalfi", followers: "170K", image: "influncers images/yassin khalfi.jpg" },
+            { name: "SOUFIANE WAJIZ", handle: "soufianewajiz", followers: "170K", image: "influncers images/soufian wajiz.jpg" },
+            { name: "KHAOULA", handle: "khaoula", followers: "168K", image: "influncers images/khaoula.jpg" },
+            { name: "ZAKARIAIKHALEF", handle: "zakariaikhalef", followers: "167K", image: "influncers images/ikhalef zakaria.jpg" },
+            { name: "TAL9ZDIRT_1", handle: "tal9zdirt_1", followers: "150K", image: "influncers images/tal9zdirt.jpg" },
+            { name: "NWIWIRAT SALMA", handle: "nwiwiratsalma", followers: "128K", image: "influncers images/nwiwirat salma.jpg" },
+            { name: "MEHDI EL GHAZI", handle: "mehdielghazi", followers: "127K", image: "influncers images/mehdi el ghazi.jpg" },
+            { name: "NABIL ELMOHADDEB", handle: "nabilelmohaddeb", followers: "123K", image: "influncers images/nabil elmhdeb.jpg" },
+            { name: "ISSAM KARMI", handle: "issamkarmi", followers: "120K", image: "influncers images/issam karmi.jpg" },
+            { name: "LBASSEL", handle: "lbassel", followers: "116K", image: "influncers images/lbassel.jpg" },
+            { name: "CHAIMAA AGR", handle: "chaimaaagr", followers: "110K", image: "influncers images/chaimaagr.jpg" },
+            { name: "FATHALAH BARCHA", handle: "fathalahbarcha", followers: "109K", image: "influncers images/fathalah barcha.jpg" },
+            { name: "R.DIIDIIYA", handle: "r.diidiiya", followers: "102K", image: "influncers images/r.diidiiya.jpg" },
+            { name: "ELHOUSSAINE AKJTAOU", handle: "elhoussaineakjtaou", followers: "96K", image: "influncers images/Elhoussaine akjtaou.jpeg" },
+            { name: "KHAOULA", handle: "khaoula", followers: "92K", image: "influncers images/kawlakmn.jpg" },
+            { name: "SAHARELMAATAOUI", handle: "saharelmaataoui", followers: "90.1K", image: "influncers images/saharelmaataoui.jpg" },
+            { name: "MEHDILOUBER6", handle: "mehdilouber6", followers: "90K", image: "influncers images/mehdilouber.jpg" },
+            { name: "AYOUB HAMDANI", handle: "ayoubhamdani", followers: "83K", image: "influncers images/ayoub.hamdanii.jpg" },
+            { name: "AYA HAD", handle: "ayahad", followers: "81K", image: "influncers images/aya.had.jpg" },
+            { name: "DARIA VOLKOVA", handle: "dariavolkova", followers: "78K", image: "influncers images/daria_emerald.jpg" },
+            { name: "FOOD SECRET'S", handle: "foodsecrets", followers: "77K", image: "influncers images/food5secrets.jpg" },
+            { name: "EMYBEAUTY 123", handle: "emybeauty123", followers: "75K", image: "influncers images/emybeauty.jpg" },
+            { name: "AMEL_MOHAMED_OFFICIEL", handle: "amel_mohamed_officiel", followers: "74K", image: "influncers images/amel_mohamed_officiel.jpg" },
+            { name: "AMAL BOUQDIR", handle: "amalbouqdir", followers: "69K", image: "influncers images/amal.bouqdir.jpg" },
+            { name: "SABAH MEKOUAR HANOUF", handle: "sabahmekouarhanouf", followers: "66K", image: "influncers images/mekouarsabah.jpg" },
+            { name: "SOUKAINANAJI", handle: "soukainanaji", followers: "63K", image: "influncers images/soukaiinanaji.jpg" },
+            { name: "NIEMA.ELL", handle: "niema.ell", followers: "58K", image: "influncers images/niema.ell.jpg" },
+            { name: "MALLOUKA", handle: "mallouka", followers: "55K", image: "influncers images/mallouka_d.jpg" },
+            { name: "JOUHAINA AIT EL OURF", handle: "jouhainaaitelourf", followers: "55K", image: "influncers images/jouhaina_aitelourf.jpg" },
+            { name: "TAIB KENIZA OFFICIEL", handle: "taibkeniza_officiel", followers: "45K", image: "influncers images/taib_keniza_officiel.jpg" },
+            { name: "LOUBNA.HABOUBA", handle: "loubna.habouba", followers: "42K", image: "influncers images/loubna.habouba.jpg" },
+            { name: "SAMIAAA ELD", handle: "samiaaa_eld", followers: "42K", image: "influncers images/samiaaa_eld.jpg" },
+            { name: "DOHA.CARMEN", handle: "doha.carmen", followers: "41K", image: "influncers images/doha.carmen.jpg" },
+            { name: "ZAYNAP AMRANI", handle: "zaynapamrani", followers: "39K", image: "influncers images/zaynap_amrani.jpg" },
+            { name: "NOUR EL HOUDA", handle: "nourelhouda", followers: "39K", image: "influncers images/NOUR EL HOUDA.jpg" },
+            { name: "HAJOURA AR1", handle: "hajoura_ar1", followers: "38K", image: "influncers images/hajoura_ar1.jpg" },
+            { name: "MARYAM BKH", handle: "maryambkh", followers: "37K", image: "influncers images/MARYAM BKH.jpg" },
+            { name: "LOUBNA.ELYAMANI", handle: "loubna.elyamani", followers: "37K", image: "influncers images/loubna.elyamani.jpg" },
+            { name: "AMBERNAJI", handle: "ambernaji", followers: "35K", image: "influncers images/ambernaji.jpg" },
+            { name: "HICHAM TOUMI", handle: "hichamtoumi", followers: "33K", image: "influncers images/hicham toumi.jpg" },
+            { name: "NOUHAILA BEKKALI", handle: "nouhailabekkali", followers: "32K", image: "influncers images/nouhaila_bekkali_mkp.jpg" },
+            { name: "ADWORLD", handle: "adworld", followers: "31K", image: "influncers images/adworld.ma.jpg" },
+            { name: "OUMNIINAA", handle: "oumniinaa", followers: "28K", image: "influncers images/oumniinaa.jpg" },
+            { name: "IMANE SEFF", handle: "imaneseff", followers: "28K", image: "influncers images/imaneseff.jpg" },
+            { name: "ANASS BAKOUR", handle: "anassbakour", followers: "23K", image: "influncers images/nutellamimii.jpg" },
+            { name: "DUNYA", handle: "dunya", followers: "23K", image: "influncers images/beautybydunyaa_.jpg" },
+            { name: "MISS_MOTIV.ACTION", handle: "miss_motiv.action", followers: "21K", image: "influncers images/miss_motiv.action.jpg" },
+            { name: "NADA DH", handle: "nadadh", followers: "20K", image: "influncers images/Nada dh.jpeg" },
+            { name: "YOUSRA_BOUKRII", handle: "yousra_boukrii", followers: "19K", image: "influncers images/yousra_boukrii.jpg" },
+            { name: "ZINA_ELOUARDKANE", handle: "zina_elouardkane", followers: "18K", image: "influncers images/zina_elouardkane.jpg" },
+            { name: "OUSSAMAHANINEE", handle: "oussamahaninee", followers: "17K", image: "influncers images/oussamahaninee.jpg" },
+            { name: "RIMBAIROUK", handle: "rimbairouk", followers: "17K", image: "influncers images/rimbairouk.jpg" },
+            { name: "NADA NACRI", handle: "nadanacri", followers: "17K", image: "influncers images/nada_nacri.jpg" },
+            { name: "SOJOLIFE7", handle: "sojolife7", followers: "14K", image: "influncers images/sojolife7.jpg" },
+            { name: "IMANE_MIRAZ", handle: "imane_miraz", followers: "13K", image: "influncers images/imane_miraz.jpg" },
+            { name: "TAHA_HAFSI", handle: "taha_hafsi", followers: "12K", image: "influncers images/taha_hafsi.jpg" },
+            { name: "IMANE FARAH", handle: "imanefarah", followers: "10K", image: "influncers images/imanefarahofficiel.jpg" },
+            { name: "SELMA ELIDRISSI", handle: "selmaelidrissi", followers: "6K", image: "influncers images/selma.edrissi.jpg" },
+            { name: "ADIL.LE.CASABLANCAIS", handle: "adil.le.casablancais", followers: "5K", image: "influncers images/adil.le.casablancais.jpg" },
+            { name: "AYOUB DIGO", handle: "ayoub_digo", followers: "3K", image: "influncers images/ayoub_digo_.jpg" },
+            { name: "MUA.YASMINA", handle: "mua.yasmina", followers: "1K", image: "influncers images/mua.yasmina.jpg" }
+        ];
+
+        // Sorting Logic Function
+        function parseFollowerCount(countStr) {
+            if (!countStr) return 0;
+            let multiplier = 1;
+            if (countStr.toUpperCase().includes('M')) multiplier = 1000000;
+            else if (countStr.toUpperCase().includes('K')) multiplier = 1000;
+            
+            const number = parseFloat(countStr.replace(/[^0-9.]/g, ''));
+            return number * multiplier;
+        }
+
+        // Sort the array strictly by follower count
+        influencers.sort((a, b) => {
+            return parseFollowerCount(b.followers) - parseFollowerCount(a.followers);
+        });
+
+        // Render Function
+        function renderCatalog(filteredList = null) {
+            const grid = document.getElementById('influencer-grid');
+            grid.innerHTML = ''; 
+            
+            const list = filteredList || influencers;
+
+            list.forEach(inf => {
+                const mediaSection = inf.image
+                    ? `
+                        <img src="${inf.image}" alt="${inf.name}" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    `
+                    : `
+                        <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-300">
+                             <i data-lucide="instagram" class="w-16 h-16 opacity-50"></i>
+                        </div>
+                    `;
+                const card = `
+                <div class="bg-white rounded-xl overflow-hidden border border-slate-200 card-hover transition-all">
+                    <div class="h-48 bg-slate-100 relative group overflow-hidden">
+                        ${mediaSection}
+                        <div class="absolute bottom-3 left-3 bg-black/70 text-white text-xs font-bold px-2 py-1 rounded-md backdrop-blur-sm">
+                            ${inf.followers}
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-slate-900 truncate text-sm" title="${inf.name}">${inf.name}</h3>
+                        <p class="text-slate-500 text-xs mb-4 truncate">@${inf.handle}</p>
+                        <a href="https://instagram.com/${inf.handle}" target="_blank" class="block w-full text-center py-2.5 rounded-lg border border-slate-200 text-sm font-semibold hover:bg-black hover:text-white hover:border-black transition-colors flex items-center justify-center gap-2">
+                           <i data-lucide="instagram" class="w-4 h-4"></i> Visit Profile
+                        </a>
+                    </div>
+                </div>
+                `;
+                grid.innerHTML += card;
+            });
+            lucide.createIcons();
+        }
+
+        function filterInfluencers() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = influencers.filter(inf => inf.name.toLowerCase().includes(query));
+            renderCatalog(filtered);
+        }
+
+        // --- AI Chat Logic (GEMINI INTEGRATION) ---
+        const apiKey = ""; 
+        
+        const systemPrompt = `
+        You are the professional AI Assistant for "CollabX MA".
+        
+        *INFLUENCER DATABASE (Sorted Top to Bottom):*
+        ${JSON.stringify(influencers)}
+        
+        *BRANDS WE WORK WITH:*
+        ${JSON.stringify(brands)}
+        
+        *INSTRUCTIONS:*
+        - If asked for top influencers, list the first few from the database.
+        - If asked about brands, mention our partners like Huawei, LC Waikiki, etc.
+        - Explain Dynamic Pricing (no fixed rates).
+        - Contact: +212 615-191083 | ahmed@collabxma.com
+        `;
+
+        function toggleAIChat() {
+            const widget = document.getElementById('ai-chat-widget');
+            if (widget.classList.contains('hidden')) {
+                widget.classList.remove('hidden');
+            } else {
+                widget.classList.add('hidden');
+            }
+        }
+
+        async function handleAIChat(e) {
+            e.preventDefault();
+            const input = document.getElementById('ai-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            addMessage(msg, 'user');
+            input.value = '';
+            addTypingIndicator();
+
+            try {
+                const response = await callGeminiAPI(msg, systemPrompt);
+                removeTypingIndicator();
+                addMessage(response, 'ai');
+            } catch (error) {
+                console.error("AI Error:", error);
+                removeTypingIndicator();
+                addMessage("Sorry, I'm having trouble connecting right now. Please contact us on WhatsApp.", 'ai');
+            }
+        }
+
+        // --- NEW: STRATEGY GENERATOR LOGIC ---
+        function toggleStrategyModal() {
+            const modal = document.getElementById('ai-strategy-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        async function generateCampaignStrategy() {
+            const brand = document.getElementById('brand-name').value;
+            const audience = document.getElementById('target-audience').value;
+            const goal = document.getElementById('campaign-goal').value;
+
+            if(!brand || !audience) {
+                alert("Please fill in all fields");
+                return;
+            }
+
+            document.getElementById('strategy-form').classList.add('hidden');
+            document.getElementById('strategy-loading').classList.remove('hidden');
+
+            const strategyPrompt = `
+            Act as a Senior Marketing Strategist for CollabX. 
+            Create a mini influencer campaign strategy for:
+            - Brand: ${brand}
+            - Target Audience: ${audience}
+            - Goal: ${goal}
+
+            Provide the output in HTML format (using <ul>, <li>, <strong> tags) with 3 creative campaign concepts.
+            Also recommend which type of influencers from our catalog (e.g., Lifestyle, Tech, Humor) would fit best.
+            `;
+
+            try {
+                const strategy = await callGeminiAPI(strategyPrompt, "You are a marketing expert.");
+                
+                document.getElementById('strategy-loading').classList.add('hidden');
+                document.getElementById('strategy-result').classList.remove('hidden');
+                document.getElementById('strategy-content').innerHTML = strategy;
+            } catch (error) {
+                alert("Error generating strategy. Please try again.");
+                resetStrategyForm();
+            }
+        }
+
+        function resetStrategyForm() {
+            document.getElementById('strategy-result').classList.add('hidden');
+            document.getElementById('strategy-form').classList.remove('hidden');
+            document.getElementById('brand-name').value = '';
+            document.getElementById('target-audience').value = '';
+        }
+
+        async function callGeminiAPI(userMessage, sysPrompt) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{
+                    parts: [{ text: userMessage }]
+                }],
+                systemInstruction: {
+                    parts: [{ text: sysPrompt }]
+                }
+            };
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || "I didn't understand that. Could you rephrase?";
+        }
+
+        function addMessage(text, sender) {
+            const chatContainer = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `flex items-start gap-2 ${sender === 'user' ? 'justify-end' : ''}`; // Fixed missing quotes
+            
+            const formattedText = text.replace(/\\(.?)\\*/g, '<strong>$1</strong>');
+
+            let content = '';
+            if (sender === 'ai') {
+                content = `
+                    <div class="bg-black text-white p-2 rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="bot" class="w-4 h-4"></i>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-700 shadow-sm max-w-[85%]">
+                        ${formattedText}
+                    </div>
+                `;
+            } else {
+                content = `
+                    <div class="bg-black text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%]">
+                        ${formattedText}
+                    </div>
+                `;
+            }
+            
+            div.innerHTML = content;
+            chatContainer.appendChild(div);
+            lucide.createIcons(); 
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const chatContainer = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.id = 'typing-indicator';
+            div.className = 'flex items-start gap-2';
+            div.innerHTML = `
+                <div class="bg-black text-white p-2 rounded-full h-8 w-8 flex items-center justify-center">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </div>
+                <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-700 shadow-sm flex gap-1 items-center">
+                    <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
+                    <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
+                    <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
+                </div>
+            `;
+            chatContainer.appendChild(div);
+            lucide.createIcons();
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const el = document.getElementById('typing-indicator');
+            if (el) el.remove();
+        }
+
+        // Initialize Catalog on Load (in background)
+        renderCatalog();
+
+    </script>
+</body>
+</html>
